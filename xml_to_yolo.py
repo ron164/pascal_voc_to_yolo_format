@@ -7,7 +7,8 @@ import glob
 import os
 import json
 
-def xml_to_yolo_bbox(bbox, w, h):
+
+def convert_to_yolo(bbox, w, h):
     # xmin, ymin, xmax, ymax
     x_center = ((bbox[2] + bbox[0]) / 2) / w
     y_center = ((bbox[3] + bbox[1]) / 2) / h
@@ -15,7 +16,8 @@ def xml_to_yolo_bbox(bbox, w, h):
     height = (bbox[3] - bbox[1]) / h
     return [x_center, y_center, width, height]
 
-def yolo_to_xml_bbox(bbox, w, h):
+
+def convert_to_pascal_voc(bbox, w, h):
     # x_center, y_center width heigth
     w_half_len = (bbox[2] * w) / 2
     h_half_len = (bbox[3] * h) / 2
@@ -25,12 +27,12 @@ def yolo_to_xml_bbox(bbox, w, h):
     ymax = int((bbox[1] * h) + h_half_len)
     return [xmin, ymin, xmax, ymax]
 
+
 classes = []
 input_dir = "annotations/"
 output_dir = "labels/"
 image_dir = "Images/"
 os.mkdir(output_dir)
-
 
 if not os.path.isdir(output_dir):
     os.mkdir(output_dir)
@@ -53,7 +55,7 @@ for fil in files:
             classes.append(label)
         index = classes.index(label)
         pil_bbox = [int(x.text) for x in obj.find("bndbox")]
-        yolo_bbox = xml_to_yolo_bbox(pil_bbox, width, height)
+        yolo_bbox = convert_to_yolo(pil_bbox, width, height)
         bbox_string = " ".join([str(x) for x in yolo_bbox])
         result.append(f"{index} {bbox_string}")
     if result:
@@ -62,5 +64,3 @@ for fil in files:
 
 with open('classes.txt', 'w', encoding='utf8') as f:
     f.write(json.dumps(classes))
-
-

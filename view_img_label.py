@@ -5,7 +5,7 @@
 from PIL import Image, ImageDraw
 
 
-def yolo_to_xml_bbox(bbox, w, h):
+def get_bbox(bbox, w, h):
     # x_center, y_center width heigth
     w_half_len = (bbox[2] * w) / 2
     h_half_len = (bbox[3] * h) / 2
@@ -34,6 +34,6 @@ with open(label_filename, 'r', encoding='utf8') as f:
     for line in f:
         data = line.strip().split(' ')
         bbox = [float(x) for x in data[1:]]
-        bboxes.append(yolo_to_xml_bbox(bbox, img.width, img.height))
+        bboxes.append(get_bbox(bbox, img.width, img.height))
 
 draw_image(img, bboxes)
